@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: thanos-ruler
+  name: thanos-ruler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: thanos-ruler
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: thanos-ruler
+    spec:
+      volumes:
+      - name: thanos-ruler-claim0
+        configMap:
+          name: {{ .Release.Name }}-configmap
+      containers:
+      - args:
+        - rule
+        - --grpc-address=0.0.0.0:10091
+        - --http-address=0.0.0.0:10902
+        - --log.level=debug
+        - --data-dir=/data
+        - --eval-interval=15s
+        - --rule-file=/etc/thanos/*.rules.yaml
+        - --alertmanagers.url=http://10.53.198.173:9093
+        - --query=thanos-querier-ui:10902
+        - --objstore.config-file=/etc/thanos/bucket_config.yaml
+        - --label=ruler_cluster="prometheus-ha"
+        - --label=ruler_replica="prometheus-0"
+        image: quay.io/thanos/thanos:v0.18.0
+        name: thanos-ruler
+        ports:
+        - containerPort: 10902
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/thanos/
+          name: thanos-ruler-claim0
+      restartPolicy: Always
+status: {}

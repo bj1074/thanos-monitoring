@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  bucket_config.yaml: |-
+{{ .Files.Get "bucket_config.yaml" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertconfigmap
+data:
+  config.yaml: |-
+{{ .Files.Get "config.yaml" }}
+

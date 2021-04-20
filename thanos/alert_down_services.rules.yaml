@@ -1,0 +1,185 @@
+groups:
+  - name: metamonitoring
+    rules:    
+      
+      - alert: service_down
+        annotations: 
+          summary: "Instance [{{ $labels.instance }}] down"
+          value: DOWN ({{ $value }})
+          description: "[{{ $labels.instance }}] of job [{{ $labels.job }}] has been down for more than 15 minute."
+        expr: up == 0
+        for: 15m
+        labels:
+          severity: critical
+          service: Platform
+          correlate: service_down
+          
+      - alert: PrometheusAllTargetsMissing
+        expr: count by (job) (up) == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus all targets missing (instance {{ $labels.instance }})
+          description: A Prometheus job does not have living target anymore{{ $value }} {{ $labels }}    
+      
+      - alert: InstanceDown
+        expr: up{kubernetes_io_hostname=~".+"} == 0
+        for: 10m
+        labels:
+          severity: critical
+          service: Platform
+          correlate: Node_down
+        annotations:
+          summary: InstancesDown (instance {{ $labels.instance }})
+          description: host is not up {{ $value }} {{ $labels }}  
+              
+      - alert: InstancesDown
+        expr: avg(up{kubernetes_io_hostname=~".+"}) BY (job) < 0.75
+        for: 10m
+        labels:
+          severity: critical
+          service: Platform
+          correlate: node_down
+        annotations:
+          summary: InstancesDown (instance {{ $labels.instance }})
+          description: Kubernetes host is not up {{ $value }} {{ $labels }}     
+      
+      - alert: KubernetesApiServerErrors
+        expr: sum(rate(apiserver_request_count{job="apiserver",code=~"^(?:5..)$"}[1m])) / sum(rate(apiserver_request_count{job="apiserver"}[1m])) * 100 > 1
+        for: 10s
+        labels:
+          service: gateway
+          severity: critical
+        annotations:
+          summary: Kubernetes API server errors (instance {{ $labels.instance }})
+          description: Kubernetes API server is experiencing high error rate {{ $value }} {{ $labels }} 
+        
+      - alert: KubernetesNodeReady
+        expr: kube_node_status_condition{condition="Ready",status="true",node=~".+"} == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kubernetes Node ready (instance {{ $labels.instance }})
+          description: Node {{ $labels.node }} has been unready for a long time {{ $value }} {{ $labels }}  
+         
+      - alert: KubernetesJobFailed
+        expr: kube_job_status_failed{job="kubernetes-service-endpoints"} > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kubernetes Job failed (instance {{ $labels.instance }})
+          description: Job {{$labels.namespace}}/{{$labels.exported_job}} failed to complete{{ $value }}{{ $labels }} 
+          
+      - alert: KubernetesCronjobSuspended
+        expr: kube_cronjob_spec_suspend != 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kubernetes CronJob suspended (instance {{ $labels.instance }})
+          description: CronJob {{ $labels.namespace }}/{{ $labels.cronjob }} is suspended{{ $value }}{{ $labels }}  
+      
+      - alert: prometheus service is down
+        expr: prometheus_sd_kubernetes_workqueue_longest_running_processor_seconds{job="kubernetes-service-endpoints"} > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: prometheus process suspended (instance {{ $labels.instance }})
+          description: prometheus process {{ $labels.namespace }}/{{ $labels.cronjob }} is suspended{{ $value }}{{ $labels }}      
+
+      - alert: KubernetesStatefulsetDown
+        expr: (kube_statefulset_status_replicas_ready / kube_statefulset_status_replicas_current) != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kubernetes StatefulSet down (instance {{ $labels.instance }})
+          description: A StatefulSet went down{{ $value }} {{ $labels }}   
+          
+      - alert: KubernetesPodNotHealthy
+        expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[1h:]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kubernetes Pod not healthy (instance {{ $labels.instance }})
+          description: Pod has been in a non-ready state for longer than an hour.{{ $value }} {{ $labels }}
+            
+      - alert: KubernetesApiClientErrors
+        expr: (sum(rate(rest_client_requests_total{code=~"(1|2).."}[1m])) by (instance, job) / sum(rate(rest_client_requests_total[1m])) by (instance, job)) * 100 > 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kubernetes API client errors (instance {{ $labels.instance }})
+          description: Kubernetes API client is experiencing high error rate{{ $value }}{{ $labels }}    
+      
+  
+        
+      
+      - alert: TargetDown
+        expr: 100 * (count by(job, namespace, service) (up == 0) / count by(job, namespace, service)(up)) > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: '{{ printf "%.4g" $value }}% of the {{ $labels.job }}/{{ $labels.service }} targets in {{ $labels.namespace }} namespace are down in (instance {{ $labels.instance }}) '  
+          description: "Node: {{ $labels.node }}  CPU Utilization  high in  rate VALUE = {{ $value }} LABELS: {{ $labels }}"
+
+      - alert: PrometheusJobMissing
+        expr: absent(up{job="prometheus"})
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus job missing (instance {{ $labels.instance }})
+          description: "A Prometheus job has disappeared\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"    
+
+      - alert: HostOutOfMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of memory (instance {{ $labels.instance }})
+          description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+      
+      - alert: HostMemoryUnderMemoryPressure
+        expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host memory under memory pressure (instance {{ $labels.instance }})
+          description:  "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}  "
+
+      - alert: HostHighCpuLoad
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host high CPU load (instance {{ $labels.instance }})
+          description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}" 
+
+      - alert: KubernetesJobFailed
+        expr: kube_job_status_failed > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kubernetes Job failed (instance {{ $labels.instance }})
+          description: "Job {{$labels.namespace}}/{{$labels.exported_job}} failed to complete\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}" 
+      
+      - alert: KubernetesPodCrashLooping
+        expr: increase(kube_pod_container_status_restarts_total[1m]) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kubernetes pod crash looping (instance {{ $labels.instance }})
+          description: "Pod {{ $labels.pod }} is crash looping\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

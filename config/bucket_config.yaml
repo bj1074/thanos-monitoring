@@ -1,0 +1,7 @@
+type: S3
+config:
+  bucket: demo-bucket
+  access_key: minioadmin
+  secret_key: minioadmin
+  endpoint: 10.53.198.174:9000
+  insecure: true

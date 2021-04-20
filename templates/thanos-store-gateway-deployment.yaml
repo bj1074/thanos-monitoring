@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: thanos-store-gateway
+  name: thanos-store-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: thanos-store-gateway
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: thanos-store-gateway
+    spec:
+      volumes:
+      - name: thanos-store-gateway-claim0
+        configMap:
+          name: {{ .Release.Name }}-configmap
+      containers:
+      - args:
+        - store
+        - --grpc-address=0.0.0.0:10091
+        - --http-address=0.0.0.0:10902
+        - --data-dir=/tmp/thanos/store
+        - --objstore.config-file=/etc/thanos/bucket_config.yaml
+        image: quay.io/thanos/thanos:v0.18.0
+        name: thanos-store-gateway
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/thanos/
+          name: thanos-store-gateway-claim0
+      restartPolicy: Always
+status: {}
