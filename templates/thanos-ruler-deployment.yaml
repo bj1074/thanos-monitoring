@@ -21,6 +21,9 @@ spec:
       - name: thanos-ruler-claim0
         configMap:
           name: {{ .Release.Name }}-configmap
+      initContainers:
+      - name: client-ipfinder
+        image: ipfinderclient:latest
       containers:
       - args:
         - rule

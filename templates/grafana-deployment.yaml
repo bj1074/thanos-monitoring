@@ -37,16 +37,20 @@ spec:
         securityContext:
           runAsUser: 104
         volumeMounts:
-        - mountPath: /var/lib/grafana
+        - mountPath: /tmp/lib/grafana
           name: grafana-data
-        - mountPath: /etc/grafana/provisioning/
+        - mountPath: /etc/grafana/provisioning
           name: grafana-claim1
       restartPolicy: Always
       volumes:
       - name: grafana-data
+        hostPath:
+          path: /home/commscope/balaji/grafana
         persistentVolumeClaim:
           claimName: grafana-data
       - name: grafana-claim1
+        hostPath:
+          path: /home/commscope/balaji/grafana
         persistentVolumeClaim:
           claimName: grafana-claim1
 status: {}
