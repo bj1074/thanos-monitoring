@@ -4,6 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/name: grafana
   name: grafana
+  namespace: {{ .Values.env.namespace }}
 spec:
   replicas: 1
   selector:
@@ -46,11 +47,7 @@ spec:
       - name: grafana-data
         hostPath:
           path: /home/commscope/balaji/grafana
-        persistentVolumeClaim:
-          claimName: grafana-data
       - name: grafana-claim1
         hostPath:
-          path: /home/commscope/balaji/grafana
-        persistentVolumeClaim:
-          claimName: grafana-claim1
+          path: /home/commscope/balaji/grafana/provisioning
 status: {}

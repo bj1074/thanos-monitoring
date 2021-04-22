@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-configmap
+  namespace: {{ .Values.env.namespace }}
 data:
   bucket_config.yaml: |-
       type: S3
@@ -16,6 +17,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: alertconfigmap
+  namespace: {{ .Values.env.namespace }}
 data:
   config.yaml: |-
       global:

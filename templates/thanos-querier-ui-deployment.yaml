@@ -4,6 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/name: thanos-querier-ui
   name: thanos-querier-ui
+  namespace: {{ .Values.env.namespace }}
 spec:
   replicas: 1
   selector:
@@ -22,10 +23,10 @@ spec:
         - query
         - --http-address=0.0.0.0:10902
         - --query.replica-label=replica
-        - --store=10.193.104.19:30006
+        #- --store=10.53.198.173:30006
         - --store.sd-files=/etc/thanos/file_sd.json
         - --store.sd-interval=1m
-        - --store=thanos-store-gateway:10091
+        - --store={{ .Values.env.thanosstoregatewaydns }}
         image: quay.io/thanos/thanos:v0.18.0
         name: thanos-querier-ui
         ports:
@@ -37,6 +38,6 @@ spec:
       restartPolicy: Always
       volumes:
       - name: thanos-querier-ui-claim0
-        persistentVolumeClaim:
-          claimName: thanos-querier-ui-claim0
+        hostPath:
+          path: /home/commscope/balaji/clusterip/
 status: {}

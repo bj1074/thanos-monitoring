@@ -4,6 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/name: thanos-ruler
   name: thanos-ruler
+  namespace: {{ .Values.env.namespace }}
 spec:
   replicas: 1
   selector:
@@ -23,7 +24,8 @@ spec:
           name: {{ .Release.Name }}-configmap
       initContainers:
       - name: client-ipfinder
-        image: ipfinderclient:latest
+        image: ipfinderclient:v1.1
+        imagePullPolicy: Never
       containers:
       - args:
         - rule
@@ -34,7 +36,7 @@ spec:
         - --eval-interval=15s
         - --rule-file=/etc/thanos/*.rules.yaml
         - --alertmanagers.url=http://10.53.198.173:9093
-        - --query=thanos-querier-ui:10902
+        - --query={{ .Values.env.thanosquerierdns }}
         - --objstore.config-file=/etc/thanos/bucket_config.yaml
         - --label=ruler_cluster="prometheus-ha"
         - --label=ruler_replica="prometheus-0"

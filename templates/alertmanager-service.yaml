@@ -1,19 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.7.0 (HEAD)
-  creationTimestamp: null
   labels:
-    io.kompose.service: alertmanager
+    app.kubernetes.io/name: alertmanager
   name: alertmanager
+  namespace: {{ .Values.env.namespace }}
 spec:
   ports:
   - name: "9093"
     port: 9093
     targetPort: 9093
   selector:
-    io.kompose.service: alertmanager
+    app.kubernetes.io/name: alertmanager
 status:
   loadBalancer: {}

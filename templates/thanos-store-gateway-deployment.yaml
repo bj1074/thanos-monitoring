@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ .Values.env.namespace }}
   labels:
     app.kubernetes.io/name: thanos-store-gateway
   name: thanos-store-gateway
