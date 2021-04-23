@@ -35,15 +35,15 @@ spec:
         - --data-dir=/data
         - --eval-interval=15s
         - --rule-file=/etc/thanos/*.rules.yaml
-        - --alertmanagers.url=http://10.53.198.173:9093
+        - --alertmanagers.url={{ .Values.env.alertmanagerdns }}
         - --query={{ .Values.env.thanosquerierdns }}
         - --objstore.config-file=/etc/thanos/bucket_config.yaml
         - --label=ruler_cluster="prometheus-ha"
         - --label=ruler_replica="prometheus-0"
-        image: quay.io/thanos/thanos:v0.18.0
+        image: {{ .Values.thanosruler.image }}
         name: thanos-ruler
         ports:
-        - containerPort: 10902
+        - containerPort: {{ .Values.thanosruler.containerPort }}
         resources: {}
         volumeMounts:
         - mountPath: /etc/thanos/

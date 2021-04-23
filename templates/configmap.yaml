@@ -5,13 +5,13 @@ metadata:
   namespace: {{ .Values.env.namespace }}
 data:
   bucket_config.yaml: |-
-      type: S3
+      type: {{ .Values.minio.buckettype }}
       config:
-        bucket: demo-bucket
-        access_key: minioadmin
-        secret_key: minioadmin
-        endpoint: 10.53.198.173:9000
-        insecure: true
+        bucket: {{ .Values.minio.bucketname }}
+        access_key: {{ .Values.minio.access_key }}
+        secret_key: {{ .Values.minio.secret_key }}
+        endpoint: {{ .Values.minio.endpoint }}
+        insecure: {{ .Values.minio.insecure }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -50,7 +50,7 @@ data:
       receivers:
       - name: mail
         email_configs:
-        - to: deeraj.vijaya@commscope.com
+        - to: {{ .Values.alertmailid }}
           require_tls: false
           send_resolved: true
           headers:

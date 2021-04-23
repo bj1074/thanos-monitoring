@@ -27,7 +27,7 @@ spec:
         - --store.sd-files=/etc/thanos/file_sd.json
         - --store.sd-interval=1m
         - --store={{ .Values.env.thanosstoregatewaydns }}
-        image: quay.io/thanos/thanos:v0.18.0
+        image: {{ .Values.thanosquerier.image }}
         name: thanos-querier-ui
         ports:
         - containerPort: 10902
@@ -39,5 +39,5 @@ spec:
       volumes:
       - name: thanos-querier-ui-claim0
         hostPath:
-          path: /home/commscope/balaji/clusterip/
+          path: {{ .Values.thanosquerier.clusterip }}
 status: {}

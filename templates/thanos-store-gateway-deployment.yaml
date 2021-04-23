@@ -29,7 +29,7 @@ spec:
         - --http-address=0.0.0.0:10902
         - --data-dir=/tmp/thanos/store
         - --objstore.config-file=/etc/thanos/bucket_config.yaml
-        image: quay.io/thanos/thanos:v0.18.0
+        image: {{ .Values.thanosstoregateway.image }}
         name: thanos-store-gateway
         resources: {}
         volumeMounts:

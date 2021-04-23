@@ -2,3 +2,43 @@ env:
   namespace: central-monitoring
   thanosstoregatewaydns: thanos-store-gateway.central-monitoring.svc.cluster.local:10091
   thanosquerierdns: thanos-qurier-ui.central-monitoring.svc.cluster.local:10902
+  alertmanagerdns: alertmanager.central-monitoring.svc.cluster.local:9093
+alertmanager:
+  image: prom/alertmanager:v0.21.0
+  containerPort: 9093
+  port: 9093
+  targetPort: 9093
+thanoscompactor:
+  image: quay.io/thanos/thanos:v0.18.0
+grafana:
+  image: grafana/grafana:latest
+  containerPort: 3000
+  lib: /home/commscope/balaji/grafana
+  plugin: /home/commscope/balaji/grafana/provisioning
+  adminpassword: foobar
+  signup: "false"
+  port: 3000
+  targetPort: 3000
+  nodePort: 30009
+minio:
+  buckettype: S3
+  bucketname: demo-bucket
+  access_key: minioadmin
+  secret_key: minioadmin
+  endpoint: 10.53.198.173:9000
+  insecure: true
+alertmailid: deeraj.vijaya@commscope.com
+thanosruler:
+  port: 10903
+  targetPort: 10902
+  image: quay.io/thanos/thanos:v0.18.0
+  containerPort: 10902
+thanosstoregateway:
+  port: 10091
+  targetPort: 10091
+  image: quay.io/thanos/thanos:v0.18.0
+thanosquerier:
+  port: 10902
+  nodePort: 30020
+  clusterip: /home/commscope/balaji/clusterip/
+  image: quay.io/thanos/thanos:v0.18.0

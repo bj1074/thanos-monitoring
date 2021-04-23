@@ -9,9 +9,9 @@ spec:
   type: NodePort
   ports:
   - protocol: TCP
-    port: 3000
-    targetPort: 3000
-    nodePort: 30009
+    port: {{ .Values.grafana.port }}
+    targetPort: {{  .Values.grafana.targetPort }}
+    nodePort: {{ .Values.grafana.nodePort }}
   selector:
     app.kubernetes.io/name: grafana
 status:

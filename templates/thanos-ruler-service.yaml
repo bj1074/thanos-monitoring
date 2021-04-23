@@ -7,9 +7,9 @@ metadata:
   namespace: {{ .Values.env.namespace }}
 spec:
   ports:
-  - name: "10903"
-    port: 10903
-    targetPort: 10902
+  - name: http
+    port: {{ .Values.thanosruler.port }} 
+    targetPort: {{ .Values.thanosruler.targetPort }}
   selector:
     app.kubernetes.io/name: thanos-ruler
 status:

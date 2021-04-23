@@ -26,10 +26,10 @@ spec:
       - args:
         - --config.file=/etc/alertmanager/config.yaml
         - --storage.path=/alertmanager
-        image: prom/alertmanager:v0.21.0
+        image: {{ .Values.alertmanager.image }}
         name: alertmanager
         ports:
-        - containerPort: 9093
+        - containerPort: {{ .Values.alertmanager.containerPort }}
         resources: {}
         volumeMounts:
         - mountPath: /etc/alertmanager/

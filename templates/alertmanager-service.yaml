@@ -7,9 +7,9 @@ metadata:
   namespace: {{ .Values.env.namespace }}
 spec:
   ports:
-  - name: "9093"
-    port: 9093
-    targetPort: 9093
+  - name: httpalert
+    port: {{ .Values.alertmanager.port }}
+    targetPort: {{ .Values.alertmanager.targetPort }}
   selector:
     app.kubernetes.io/name: alertmanager
 status:

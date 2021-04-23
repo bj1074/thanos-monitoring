@@ -7,8 +7,8 @@ spec:
   type: ClusterIP
   ports:
     - name: grpc
-      port: 10091
-      targetPort: 10091
+      port: {{ .Values.thanosstoregateway.port }}
+      targetPort: {{ .Values.thanosstoregateway.targetPort }}
   selector:
     app.kubernetes.io/name: thanos-store-gateway
 status:

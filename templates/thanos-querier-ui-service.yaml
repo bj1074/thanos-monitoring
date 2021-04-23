@@ -8,8 +8,8 @@ metadata:
 spec:
   ports:
   - name: "10902"
-    port: 10902
-    nodePort: 30020
+    port: {{ .Values.thanosquerier.port }}
+    nodePort: {{ .Values.thanosquerier.nodePort }}
   type: NodePort
   selector:
     app.kubernetes.io/name: thanos-querier-ui
