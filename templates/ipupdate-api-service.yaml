@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: ipupdate-api-service
+  name: ipupdate-api-service
+  namespace: {{ .Values.env.namespace }}
+spec:
+  ports:
+  - name: "5000"
+    protocol: TCP
+    port: {{ .Values.ipfinderserver.port }}
+    nodePort: {{ .Values.ipfinderserver.nodePort }}
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: ipupdate-api-server
+status:
+  loadBalancer: {}

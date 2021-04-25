@@ -1,7 +1,8 @@
 apiVersion: v1
 data:
   GF_SECURITY_ADMIN_PASSWORD: {{ .Values.grafana.adminpassword }}
-  GF_USERS_ALLOW_SIGN_UP: {{ .Values.grafana.signup }}
+  #GF_USERS_ALLOW_SIGN_UP: {{ .Values.grafana.signup }}
+  GF_USERS_ALLOW_SIGN_UP: "false"
 kind: ConfigMap
 metadata:
   namespace: {{ .Values.env.namespace }}

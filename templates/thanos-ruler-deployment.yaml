@@ -24,8 +24,7 @@ spec:
           name: {{ .Release.Name }}-configmap
       initContainers:
       - name: client-ipfinder
-        image: ipfinderclient:v1.1
-        imagePullPolicy: Never
+        image: oc5g-docker-prod-suwanee.binaryrepo-east.arrisi.com/ipfinderclient:v1.1
       containers:
       - args:
         - rule

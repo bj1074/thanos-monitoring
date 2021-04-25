@@ -3,6 +3,15 @@ env:
   thanosstoregatewaydns: thanos-store-gateway.central-monitoring.svc.cluster.local:10091
   thanosquerierdns: thanos-qurier-ui.central-monitoring.svc.cluster.local:10902
   alertmanagerdns: alertmanager.central-monitoring.svc.cluster.local:9093
+  
+
+ipfinderserver:
+  image: oc5g-docker-prod-suwanee.binaryrepo-east.arrisi.com/ipfinderserver:v1.2
+  port: 5000
+  targetPort: 5000
+  nodePort: 30011 
+  hostpath: /home/commscope/balaji/clusterip/
+
 alertmanager:
   image: prom/alertmanager:v0.21.0
   containerPort: 9093
@@ -16,7 +25,7 @@ grafana:
   lib: /home/commscope/balaji/grafana
   plugin: /home/commscope/balaji/grafana/provisioning
   adminpassword: foobar
-  signup: "false"
+  signup: false
   port: 3000
   targetPort: 3000
   nodePort: 30009
